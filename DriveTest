@@ -27,29 +27,28 @@ public class MecanumTest1 extends LinearOpMode {
         leftBack = hardwareMap.get(DcMotor.class, "leftback");
         rightBack = hardwareMap.get(DcMotor.class, "rightback");
         //Direction Setting
-        leftFront.setDirection(DcMotor.Direction.FORWARD);
-        rightFront.setDirection(DcMotor.Direction.REVERSE);
-        leftBack.setDirection(DcMotor.Direction.FORWARD);
-        rightBack.setDirection(DcMotor.Direction.REVERSE);
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        rightFront.setDirection(DcMotor.Direction.FORWARD);
+        leftBack.setDirection(DcMotor.Direction.REVERSE);
+        rightBack.setDirection(DcMotor.Direction.FORWARD);
     }
     
-    //Right It's Self
-    public void selfRight() {
-    bool selfRight gamepad1.y;
-    double AutoPower = 0.5;
-    while (selfRight == 1) {
-        if ( > 0) {
+    //Turn until degrees is ~0
+    public void findZero(double degrees;) {
+        double AutoPower = degrees*0.05;
+        if (degrees >= 5) {
+            //TURN RIGHT
             leftFront.setPower(AutoPower);
-            rightFront.setPower(AutoPower);
+            rightFront.setPower(-AutoPower);
             leftBack.setPower(AutoPower);
-            rightBack.setPower(AutoPower);
-        } else if ( < 0) {
-            leftFront.setPower(AutoPower);
+            rightBack.setPower(-AutoPower);
+        } else if (degrees <= -4) {
+            //TURN LEFT
+            leftFront.setPower(-AutoPower);
             rightFront.setPower(AutoPower);
-            leftBack.setPower(AutoPower);
+            leftBack.setPower(-AutoPower);
             rightBack.setPower(AutoPower);
         }
-    }
     }
     //Run Opmode
     @Override
@@ -57,14 +56,14 @@ public class MecanumTest1 extends LinearOpMode {
         hardwareInit();
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-        
-        // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
-
-        // run until the end of the match (driver presses STOP)
+        //Self-rights when y is pressed on controller 1
+        //NEEDS GYRO INTEGRATION ASAP
         while (opModeIsActive()) {
-
+            //Self right when y is pressed
+            while (gamepad1.y = 1)
+            findZero(Orientation.firstAngle);
             // Setup a variable for each drive wheel to save power level for telemetry
             double leftFrontPower;
             double rightFrontPower;
@@ -74,23 +73,31 @@ public class MecanumTest1 extends LinearOpMode {
             double drive = -gamepad1.left_stick_y;
             double strafe  = gamepad1.left_stick_x;
             double turn = gamepad1.right_stick_x;
-            leftPower    = Range.clip(drive, -1.0);
-            rightPower   = Range.clip(drive, -1.0);
-            //if stick is positive
-            if(strafe>=0){
-            leftFrontPower   = Range.clip(strafe, 1.0);
-            rightFrontPower  = Range.clip(strafe, -1.0);
-            leftBackPower  = Range.clip(strafe, -1.0);
-            rightBackPower = Range.clip(strafe, 1.0);
+            leftPower    = Range.clip(drive, 1.0);
+            rightPower   = Range.clip(drive, 1.0);
+            //Turning
+            if(turn >= 0) {
+                leftpower - turn*0.25
+                rightpower + turn*0.25
+            } else if (turn <= 0) {
+                leftpower + turn*0.25
+                rightpower - turn*0.25
+            }
+            //If strafe stick is positive
+            if(strafe>=0) {
+                leftFrontPower   = Range.clip(strafe, 1.0);
+                rightFrontPower  = Range.clip(strafe, -1.0);
+                leftBackPower  = Range.clip(strafe, -1.0);
+                rightBackPower = Range.clip(strafe, 1.0);
             }
             //If stick is negative
-            else{
-            leftFrontPower   = Range.clip(strafe, -1.0);
-            rightFrontPower  = Range.clip(strafe, 1.0);
-            leftBackPower  = Range.clip(strafe, 1.0);
-            rightBackPower = Range.clip(strafe, -1.0);
+            else {
+                leftFrontPower   = Range.clip(strafe, -1.0);
+                rightFrontPower  = Range.clip(strafe, 1.0);
+                leftBackPower  = Range.clip(strafe, 1.0);
+                rightBackPower = Range.clip(strafe, -1.0);
             }
-            //Add Together
+            //Add together individual with totals
             double leftFrontPowerCalculated = leftPower + leftFrontPower;
             double rightFrontPowerCalculated = rightPower + rightFrontPower;
             double leftBackPowerCalculated = leftPower + leftBackPower;
