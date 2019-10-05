@@ -1,6 +1,3 @@
-//NOT YET TESTED, DO NOT RELY ON IT
-//Problems:
-//How to specify ports
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -22,34 +19,45 @@ public class MecanumTest1 extends LinearOpMode {
     private DcMotor rightFront = null;
     private DcMotor rightBack = null;
     
-    //DcMotor leftDrive;
-    //DcMotor rightDrive;
-    
-    //double power = 0.5;
-    
+    //Define Hardware
     public void hardwareInit() {
+        //Hardware Map
         leftFront  = hardwareMap.get(DcMotor.class, "leftfront");
         rightFront = hardwareMap.get(DcMotor.class, "rightfront");
         leftBack = hardwareMap.get(DcMotor.class, "leftback");
         rightBack = hardwareMap.get(DcMotor.class, "rightback");
+        //Direction Setting
+        leftFront.setDirection(DcMotor.Direction.FORWARD);
+        rightFront.setDirection(DcMotor.Direction.REVERSE);
+        leftBack.setDirection(DcMotor.Direction.FORWARD);
+        rightBack.setDirection(DcMotor.Direction.REVERSE);
     }
-
+    
+    //Right It's Self
+    public void selfRight() {
+    bool selfRight gamepad1.y;
+    double AutoPower = 0.5;
+    while (selfRight == 1) {
+        if ( > 0) {
+            leftFront.setPower(AutoPower);
+            rightFront.setPower(AutoPower);
+            leftBack.setPower(AutoPower);
+            rightBack.setPower(AutoPower);
+        } else if ( < 0) {
+            leftFront.setPower(AutoPower);
+            rightFront.setPower(AutoPower);
+            leftBack.setPower(AutoPower);
+            rightBack.setPower(AutoPower);
+        }
+    }
+    }
+    //Run Opmode
     @Override
     public void runOpMode() {
+        hardwareInit();
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-
-        leftFront  = hardwareMap.get(DcMotor.class, "left_front");
-        rightFront = hardwareMap.get(DcMotor.class, "right_front");
-        leftBack = hardwareMap.get(DcMotor.class, "left_back");
-        rightBack = hardwareMap.get(DcMotor.class, "right_back");
-
-        // Most robots need the motor on one side to be reversed to drive forward
-        // Reverse the motor that runs backwards when connected directly to the battery
-        leftFront.setDirection(DcMotor.Direction.FORWARD);
-        rightFront.setDirection(DcMotor.Direction.FORWARD);
-        leftBack.setDirection(DcMotor.Direction.FORWARD);
-        rightBack.setDirection(DcMotor.Direction.FORWARD);
+        
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
@@ -62,32 +70,27 @@ public class MecanumTest1 extends LinearOpMode {
             double rightFrontPower;
             double leftBackPower;
             double rightFrontPower;
-
-            // Choose to drive using either Tank Mode, or POV Mode
-            // Comment out the method that's not used.  The default below is POV.
-
-            // POV Mode uses left stick to go forward, and right stick to turn.
-            // - This uses basic math to combine motions and is easier to drive straight.
+            //Inputs
             double drive = -gamepad1.left_stick_y;
-            double sidetoside  = gamepad1.left_stick_x;
+            double strafe  = gamepad1.left_stick_x;
             double turn = gamepad1.right_stick_x;
             leftPower    = Range.clip(drive, -1.0);
             rightPower   = Range.clip(drive, -1.0);
             //if stick is positive
-            if(sidetoside>=0){
-            leftFrontPower   = Range.clip(sidetoside, 1.0);
-            rightFrontPower  = Range.clip(sidetoside, -1.0);
-            leftBackPower  = Range.clip(sidetoside, -1.0);
-            rightBackPower = Range.clip(sidetoside, 1.0);
+            if(strafe>=0){
+            leftFrontPower   = Range.clip(strafe, 1.0);
+            rightFrontPower  = Range.clip(strafe, -1.0);
+            leftBackPower  = Range.clip(strafe, -1.0);
+            rightBackPower = Range.clip(strafe, 1.0);
             }
             //If stick is negative
             else{
-            leftFrontPower   = Range.clip(sidetoside, -1.0);
-            rightFrontPower  = Range.clip(sidetoside, 1.0);
-            leftBackPower  = Range.clip(sidetoside, 1.0);
-            rightBackPower = Range.clip(sidetoside, -1.0);
+            leftFrontPower   = Range.clip(strafe, -1.0);
+            rightFrontPower  = Range.clip(strafe, 1.0);
+            leftBackPower  = Range.clip(strafe, 1.0);
+            rightBackPower = Range.clip(strafe, -1.0);
             }
-            
+            //Add Together
             double leftFrontPowerCalculated = leftPower + leftFrontPower;
             double rightFrontPowerCalculated = rightPower + rightFrontPower;
             double leftBackPowerCalculated = leftPower + leftBackPower;
@@ -100,6 +103,7 @@ public class MecanumTest1 extends LinearOpMode {
             rightFront.setPower(rightFrontPowerCalculated);
             leftBack.setPower(leftBackPowerCalculated);
             rightBack.setPower(rightBackPowerCalculated);
+            
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
