@@ -1,6 +1,3 @@
-//NOT YET TESTED, DO NOT RELY ON IT
-//Problems:
-//How to specify ports
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -10,10 +7,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+@TeleOp(name="Full Build", group="Linear Opmode")
 
-@TeleOp(name="Basic: Linear OpMode", group="Linear Opmode")
-
-public class MecanumTest1 extends LinearOpMode {
+public class FullBuild extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -22,89 +18,107 @@ public class MecanumTest1 extends LinearOpMode {
     private DcMotor rightFront = null;
     private DcMotor rightBack = null;
     
-    //DcMotor leftDrive;
-    //DcMotor rightDrive;
-    
-    //double power = 0.5;
-    
+    //Define Hardware
     public void hardwareInit() {
+        //Hardware Map
         leftFront  = hardwareMap.get(DcMotor.class, "leftfront");
         rightFront = hardwareMap.get(DcMotor.class, "rightfront");
         leftBack = hardwareMap.get(DcMotor.class, "leftback");
         rightBack = hardwareMap.get(DcMotor.class, "rightback");
+        //Direction Setting
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        rightFront.setDirection(DcMotor.Direction.FORWARD);
+        leftBack.setDirection(DcMotor.Direction.REVERSE);
+        rightBack.setDirection(DcMotor.Direction.FORWARD);
     }
-
+    
+    //Turn until degrees is ~0
+    public void findZero(double degrees;) {
+        double AutoPower = degrees*0.05;
+        if (degrees >= 5) {
+            //TURN RIGHT
+            leftFront.setPower(AutoPower);
+            rightFront.setPower(-AutoPower);
+            leftBack.setPower(AutoPower);
+            rightBack.setPower(-AutoPower);
+        } else if (degrees <= -4) {
+            //TURN LEFT
+            leftFront.setPower(-AutoPower);
+            rightFront.setPower(AutoPower);
+            leftBack.setPower(-AutoPower);
+            rightBack.setPower(AutoPower);
+        }
+    }
+    //Run Opmode
     @Override
     public void runOpMode() {
+        hardwareInit();
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-
-        leftFront  = hardwareMap.get(DcMotor.class, "left_front");
-        rightFront = hardwareMap.get(DcMotor.class, "right_front");
-        leftBack = hardwareMap.get(DcMotor.class, "left_back");
-        rightBack = hardwareMap.get(DcMotor.class, "right_back");
-
-        // Most robots need the motor on one side to be reversed to drive forward
-        // Reverse the motor that runs backwards when connected directly to the battery
-        leftFront.setDirection(DcMotor.Direction.FORWARD);
-        rightFront.setDirection(DcMotor.Direction.FORWARD);
-        leftBack.setDirection(DcMotor.Direction.FORWARD);
-        rightBack.setDirection(DcMotor.Direction.FORWARD);
-        // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
-
-        // run until the end of the match (driver presses STOP)
+        //Self-rights when y is pressed on controller 1
+        //NEEDS GYRO INTEGRATION ASAP
         while (opModeIsActive()) {
-
-            // Setup a variable for each drive wheel to save power level for telemetry
-            double leftFrontPower;
-            double rightFrontPower;
-            double leftBackPower;
-            double rightFrontPower;
-
-            // Choose to drive using either Tank Mode, or POV Mode
-            // Comment out the method that's not used.  The default below is POV.
-
-            // POV Mode uses left stick to go forward, and right stick to turn.
-            // - This uses basic math to combine motions and is easier to drive straight.
-            double drive = -gamepad1.left_stick_y;
-            double sidetoside  = gamepad1.left_stick_x;
-            double turn = gamepad1.right_stick_x;
-            leftPower    = Range.clip(drive, -1.0);
-            rightPower   = Range.clip(drive, -1.0);
-            //if stick is positive
-            if(sidetoside>=0){
-            leftFrontPower   = Range.clip(sidetoside, 1.0);
-            rightFrontPower  = Range.clip(sidetoside, -1.0);
-            leftBackPower  = Range.clip(sidetoside, -1.0);
-            rightBackPower = Range.clip(sidetoside, 1.0);
-            }
-            //If stick is negative
-            else{
-            leftFrontPower   = Range.clip(sidetoside, -1.0);
-            rightFrontPower  = Range.clip(sidetoside, 1.0);
-            leftBackPower  = Range.clip(sidetoside, 1.0);
-            rightBackPower = Range.clip(sidetoside, -1.0);
-            }
-            
-            double leftFrontPowerCalculated = leftPower + leftFrontPower;
-            double rightFrontPowerCalculated = rightPower + rightFrontPower;
-            double leftBackPowerCalculated = leftPower + leftBackPower;
-            double rightBackPowerCalculated = rightPower + rightBackPower;
-            double leftPowerCalculated = leftBackPowerCalculated + leftFrontPowerCalculated;
-            double rightPowerCalculated = leftBackPowerCalculated + leftFrontPowerCalculated;
-
-            // Send calculated power to wheels
-            leftFront.setPower(leftFrontPowerCalculated);
-            rightFront.setPower(rightFrontPowerCalculated);
-            leftBack.setPower(leftBackPowerCalculated);
-            rightBack.setPower(rightBackPowerCalculated);
-
-            // Show the elapsed game time and wheel power.
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Motors", "LF (%.2f), RF (%.2f), LB (%.2f), RB (%.2f)", leftFrontPowerCalculated, rightFrontPowerCalculated, leftBackPowerCalculated, rightBackPowerCalculated);
-            telemetry.update();
+            //Self right when y is pressed
+            while (gamepad1.y = 1)
+                findZero(Orientation.firstAngle);
+            driving();
+            telemetry();
         }
+    }
+    public void telemetry() {
+        // Show the elapsed game time and wheel power.
+        telemetry.addData("Status", "Run Time: " + runtime.toString());
+        telemetry.addData("Motors", "LF (%.2f), RF (%.2f), LB (%.2f), RB (%.2f)", leftFrontPowerCalculated, rightFrontPowerCalculated, leftBackPowerCalculated, rightBackPowerCalculated);
+        telemetry.update();
+    }
+    public void driving() {
+        // Setup a variable for each drive wheel to save power level for telemetry
+        double leftFrontPower;
+        double rightFrontPower;
+        double leftBackPower;
+        double rightFrontPower;
+        //Inputs
+        double drive = -gamepad1.left_stick_y;
+        double strafe  = gamepad1.left_stick_x;
+        double turn = gamepad1.right_stick_x;
+        leftPower    = Range.clip(drive, 1.0);
+        rightPower   = Range.clip(drive, 1.0);
+        //Turning
+        if(turn >= 0) {
+            leftpower - turn*0.25
+            rightpower + turn*0.25
+        } else if (turn <= 0) {
+            leftpower + turn*0.25
+            rightpower - turn*0.25
+        }
+        //If strafe stick is positive
+        if(strafe>=0) {
+            leftFrontPower   = Range.clip(strafe, 1.0);
+            rightFrontPower  = Range.clip(strafe, -1.0);
+            leftBackPower  = Range.clip(strafe, -1.0);
+            rightBackPower = Range.clip(strafe, 1.0);
+        }
+        //If stick is negative
+        else {
+            leftFrontPower   = Range.clip(strafe, -1.0);
+            rightFrontPower  = Range.clip(strafe, 1.0);
+            leftBackPower  = Range.clip(strafe, 1.0);
+            rightBackPower = Range.clip(strafe, -1.0);
+        }
+        //Add together individual with totals
+        double leftFrontPowerCalculated = leftPower + leftFrontPower;
+        double rightFrontPowerCalculated = rightPower + rightFrontPower;
+        double leftBackPowerCalculated = leftPower + leftBackPower;
+        double rightBackPowerCalculated = rightPower + rightBackPower;
+        double leftPowerCalculated = leftBackPowerCalculated + leftFrontPowerCalculated;
+        double rightPowerCalculated = leftBackPowerCalculated + leftFrontPowerCalculated;
+
+        // Send calculated power to wheels
+        leftFront.setPower(leftFrontPowerCalculated);
+        rightFront.setPower(rightFrontPowerCalculated);
+        leftBack.setPower(leftBackPowerCalculated);
+        rightBack.setPower(rightBackPowerCalculated);
     }
 }
