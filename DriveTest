@@ -71,6 +71,7 @@ public class FullBuild extends LinearOpMode {
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Motors", "LF (%.2f), RF (%.2f), LB (%.2f), RB (%.2f)", leftFrontPowerCalculated, rightFrontPowerCalculated, leftBackPowerCalculated, rightBackPowerCalculated);
+        telemetry.addData("Heading", "Heading: (%.2f)", Orientation.firstAngle);
         telemetry.update();
     }
     public void driving() {
