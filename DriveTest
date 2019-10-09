@@ -37,13 +37,14 @@
     //Turn until degrees is ~0
     public void findZero(double degrees, double error) {
         double AutoPower = range.clip(degrees*0.05, -1.0,1.0);
-        if (degrees >= error) {
+        while (degrees >= error) {
             //TURN RIGHT
             leftFront.setPower(AutoPower);
             rightFront.setPower(-AutoPower);
             leftBack.setPower(AutoPower);
             rightBack.setPower(-AutoPower);
-        } else if (degrees <= -error) {
+        }
+        while (degrees <= -error) {
             //TURN LEFT
             leftFront.setPower(-AutoPower);
             rightFront.setPower(AutoPower);
