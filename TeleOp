@@ -114,9 +114,9 @@ public class MainBuild extends LinearOpMode {
             }
             //Take control (Small Ajustments)
             while (gamepad2.y && gamepad1.atRest()) {
-                double drive = -gamepad2.left_stick_y*0.25;
-                double strafe = gamepad2.left_stick_x*0.25;
-                double turn = gamepad2.right_stick_x*0.25;
+                drive = -gamepad2.left_stick_y*0.25;
+                strafe = gamepad2.left_stick_x*0.25;
+                turn = gamepad2.right_stick_x*0.25;
             }   
             if (gamepad2.right_bumper) {
                 //Grab w/ claw
