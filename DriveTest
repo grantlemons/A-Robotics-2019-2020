@@ -10,8 +10,8 @@
     //private DcMotor arm2 = null;
     BNO055IMU imu;
     Orientation angles;
+    //StoneTracker
     // stoneTrack = new StoneTracker();
-    
     //StoneTracker stoneTrack;
     
     //Define Hardware
