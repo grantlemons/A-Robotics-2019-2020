@@ -36,20 +36,9 @@
     }
     //Turn until degrees is ~0
     public void findZero(double degrees, double error) {
-        double AutoPower = range.clip(degrees*0.05, -1.0,1.0);
-        while (degrees >= error) {
-            //TURN RIGHT
-            leftFront.setPower(AutoPower);
-            rightFront.setPower(-AutoPower);
-            leftBack.setPower(AutoPower);
-            rightBack.setPower(-AutoPower);
-        }
-        while (degrees <= -error) {
-            //TURN LEFT
-            leftFront.setPower(-AutoPower);
-            rightFront.setPower(AutoPower);
-            leftBack.setPower(-AutoPower);
-            rightBack.setPower(AutoPower);
+        while (degrees <= -error || degrees >= error) {
+            telemetry.addData("Status:","Turning");
+            double turn = degrees * 0.06;
             telemetry.addData("Auto Power:(%.2f) RB:(%.2f) LB:(%.2f) RF:(%.2f) LF:(%.2f)", AutoPower, rightBack, leftBack, rightFront, leftFront);
         }
     }
@@ -72,7 +61,7 @@
             angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             //Self right when y is pressed
             while (gamepad1.y){
-                telemetry.addData("Status:","Finding Zero");
+                telemetry.addData("Status:","Read Button");
                 findZero(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle), 4);
             }
             runTelemetry();
