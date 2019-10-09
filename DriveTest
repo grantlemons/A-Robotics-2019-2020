@@ -48,7 +48,7 @@
         hardwareInit();
         //stoneTrack.init(hardwareMap);
         //stoneTrack.activate();
-        /*if (stoneTrack.scan() > 0 ) {
+        /*if (stoneTrack.scan() > 0 && gamepad1.left_bumper) {
             double turn = stoneTrack.stone.estimateAngleToObject(AngleUnit.DEGREES) * 0.05;
             double drive = (300 - stoneTrack.stone.getHeight()) * 0.05;
         }*/
