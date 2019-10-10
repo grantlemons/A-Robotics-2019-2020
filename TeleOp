@@ -36,8 +36,8 @@ public class MainBuild extends LinearOpMode {
     BNO055IMU imu;
     Orientation angles;
     //StoneTracker
-    // stoneTrack = new StoneTracker();
-    //StoneTracker stoneTrack;
+    stoneTrack = new StoneTracker();
+    StoneTracker stoneTrack;
     
     //Define Hardware
     public void hardwareInit() {
@@ -71,12 +71,12 @@ public class MainBuild extends LinearOpMode {
     @Override
     public void runOpMode() {
         hardwareInit();
-        //stoneTrack.init(hardwareMap);
-        //stoneTrack.activate();
-        /*if (stoneTrack.scan() > 0 && gamepad1.left_bumper) {
+        stoneTrack.init(hardwareMap);
+        stoneTrack.activate();
+        if (stoneTrack.scan() > 0 && gamepad1.left_bumper) {
             double turn = stoneTrack.stone.estimateAngleToObject(AngleUnit.DEGREES) * 0.05;
             double drive = (300 - stoneTrack.stone.getHeight()) * 0.05;
-        }*/
+        }
         telemetry.addData("Status:", "Initialized");
         telemetry.update();
         waitForStart();
@@ -110,7 +110,7 @@ public class MainBuild extends LinearOpMode {
             intakeL.setPower(intake);
 
             if (gamepad2.a) {
-                //Grab Block Automaticlly (Needs Encoders)
+            //Grab Block Automaticlly (Needs Encoders)
             }
             //Take control (Small Ajustments)
             while (gamepad2.y && gamepad1.atRest()) {
@@ -136,7 +136,7 @@ public class MainBuild extends LinearOpMode {
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("RB:(%.2f) LB:(%.2f) RF:(%.2f) LF:(%.2f)", rightBack,leftBack,rightFront,leftFront);
         telemetry.addData("Heading", "Heading: (%.2f)", AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle));
-        //telemetry.addData("Stone Tracker (%.2f)", stoneTrack.toString());
+        telemetry.addData("Stone Tracker (%.2f)", stoneTrack.toString());
         telemetry.update();
     }
     public void pickBlock() {
