@@ -1,0 +1,146 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import org.firstinspires.ftc.robotcore.external.Func;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import java.util.Locale;
+
+
+
+@TeleOp(name="MainBuild", group="Linear Opmode")
+
+public class MainBuild extends LinearOpMode {
+    
+    // Declare OpMode members.
+    private ElapsedTime runtime = new ElapsedTime();
+    private DcMotor leftFront = null;
+    private DcMotor leftBack = null;
+    private DcMotor rightFront = null;
+    private DcMotor rightBack = null;
+    private DcMotor intakeL = null;
+    private DcMotor intakeR = null;
+    //private DcMotor arm1 = null;
+    //private DcMotor arm2 = null;
+    BNO055IMU imu;
+    Orientation angles;
+    //StoneTracker
+    // stoneTrack = new StoneTracker();
+    //StoneTracker stoneTrack;
+    
+    //Define Hardware
+    public void hardwareInit() {
+        //Hardware Map
+        leftFront  = hardwareMap.get(DcMotor.class, "purple");
+        rightFront = hardwareMap.get(DcMotor.class, "black");
+        leftBack = hardwareMap.get(DcMotor.class, "red");
+        rightBack = hardwareMap.get(DcMotor.class, "orange");
+        intakeL = hardwareMap.get(DcMotor.class, "green");
+        intakeR = hardwareMap.get(DcMotor.class, "blue");
+        //arm1 = hardwareMap.get(DcMotor.class, "yellow");
+        //arm2 = hardwareMap.get(DcMotor.class, "white");
+        imu = hardwareMap.get(BNO055IMU.class, "gyro");
+        //Direction Setting
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        rightFront.setDirection(DcMotor.Direction.FORWARD);
+        leftBack.setDirection(DcMotor.Direction.REVERSE);
+        rightBack.setDirection(DcMotor.Direction.FORWARD);
+        intakeL.setDirection(DcMotor.Direction.FORWARD);
+        intakeR.setDirection(DcMotor.Direction.REVERSE);
+    }
+    //Turn until degrees is ~0
+    public void findZero(double degrees, double error) {
+        while (degrees <= -error || degrees >= error) {
+            telemetry.addData("Status:","Turning");
+            double turn = degrees * 0.06;
+            telemetry.addData("Auto Power:(%.2f) RB:(%.2f) LB:(%.2f) RF:(%.2f) LF:(%.2f)", AutoPower, rightBack, leftBack, rightFront, leftFront);
+        }
+    }
+    //Run Opmode
+    @Override
+    public void runOpMode() {
+        hardwareInit();
+        //stoneTrack.init(hardwareMap);
+        //stoneTrack.activate();
+        /*if (stoneTrack.scan() > 0 && gamepad1.left_bumper) {
+            double turn = stoneTrack.stone.estimateAngleToObject(AngleUnit.DEGREES) * 0.05;
+            double drive = (300 - stoneTrack.stone.getHeight()) * 0.05;
+        }*/
+        telemetry.addData("Status:", "Initialized");
+        telemetry.update();
+        waitForStart();
+        runtime.reset();
+        while (opModeIsActive()) {
+            //defines heading
+            angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            //Self right when y is pressed
+            while (gamepad1.y){
+                telemetry.addData("Status:","Read Button");
+                findZero(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle), 4);
+            }
+            runTelemetry();
+
+            //Inputs
+            double drive = -gamepad1.left_stick_y;
+            double strafe  = gamepad1.left_stick_x;
+            double turn = gamepad1.right_stick_x;
+
+            // Send calculated power to wheels
+            leftBack.setPower(drive + turn + strafe);
+            rightFront.setPower(drive - turn - strafe);
+            leftFront.setPower(drive + turn - strafe);
+            rightBack.setPower(drive - turn + strafe);
+
+            //Gamepad2
+
+            //Intake
+            double intake = range.clip(gamepad2.right_trigger, -1.0, 1.0);
+            intakeR.setPower(intake);
+            intakeL.setPower(intake);
+
+            if (gamepad2.a) {
+                //Grab Block Automaticlly (Needs Encoders)
+            }
+            //Take control (Small Ajustments)
+            while (gamepad2.y && gamepad1.atRest()) {
+                drive = -gamepad2.left_stick_y*0.25;
+                strafe = gamepad2.left_stick_x*0.25;
+                turn = gamepad2.right_stick_x*0.25;
+            }   
+            if (gamepad2.right_bumper) {
+                //Grab w/ claw
+            }
+            if (gamepad2.left_bumper) {
+                //Release w/ claw
+            }
+            //Unless Y is pressed, move arm
+            while (!gamepad2.y) {
+                //Move Arm
+            }
+        }
+        }
+
+    public void runTelemetry() {
+        // Show the elapsed game time and wheel power.
+        telemetry.addData("Status", "Run Time: " + runtime.toString());
+        telemetry.addData("RB:(%.2f) LB:(%.2f) RF:(%.2f) LF:(%.2f)", rightBack,leftBack,rightFront,leftFront);
+        telemetry.addData("Heading", "Heading: (%.2f)", AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle));
+        //telemetry.addData("Stone Tracker (%.2f)", stoneTrack.toString());
+        telemetry.update();
+    }
+    public void pickBlock() {
+        //arm moves down to pick up
+        //closes on block
+    }
+}
