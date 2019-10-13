@@ -60,12 +60,15 @@ public class Teleop extends LinearOpMode {
         intakeR.setDirection(DcMotor.Direction.REVERSE);
         //clawR.setDirection(Servo.Direction.REVERSE);
         //clawL.setDirection(Servo.Direction.FORWARD);
+        double drive;
+        double turn;
+        double strafe;
     }
     //Turn until degrees is ~0
     public void findZero(double degrees, double error) {
         while (degrees <= -error || degrees >= error) {
             telemetry.addData("Status:","Turning");
-            double turn = degrees * 0.06;
+            turn = degrees * 0.06;
             telemetry.addData("Auto Power:(%.2f) RB:(%.2f) LB:(%.2f) RF:(%.2f) LF:(%.2f)", AutoPower, rightBack, leftBack, rightFront, leftFront);
         }
     }
@@ -94,19 +97,19 @@ public class Teleop extends LinearOpMode {
             runTelemetry();
 
             //Inputs
-            double drive = -gamepad1.left_stick_y;
-            double strafe  = gamepad1.left_stick_x;
-            double turn = gamepad1.right_stick_x;
+            drive = -gamepad1.left_stick_y;
+            strafe  = gamepad1.left_stick_x;
+            turn = gamepad1.right_stick_x;
 
         //Gamepad2
             //Intake
             double intake;
-            /*while(gamepad2.right_bumper) {
-                for(double i = 1000; i <= 1000 && i > 500;i -= Math.pow(i, 0.035)) {
-                   intake = i/1000;
-                   delay((10*1000)/397);
+            while(gamepad2.right_bumper) {
+                for(double i = 5000; i <= 5000 && i > 2500;i -= Math.pow(i, 0.0035)) {
+                    intake = i/5000;
+                    sleep((10*1000)/2430);
                 }
-            }*/
+            }
             intake = 0;
             if (gamepad2.a) {
                 //Grab Block Automaticlly (Needs Encoders)
@@ -119,9 +122,7 @@ public class Teleop extends LinearOpMode {
                 turn = gamepad2.right_stick_x*0.25;
             }   
             //Claw movement
-            /*double claw = gamepad1.right_trigger - gamepad1.left_trigger;
-            clawR.setPosition(claw);
-            clawL.setPosition(claw);*/
+            //double claw = gamepad1.right_trigger - gamepad1.left_trigger;
             //Unless Y is pressed, move arm
             while (!gamepad2.y) {
                 //Move Arm
@@ -133,6 +134,8 @@ public class Teleop extends LinearOpMode {
             rightBack.setPower(drive - turn + strafe);
             intakeR.setPower(intake);
             intakeL.setPower(intake);
+            //clawR.setPosition(claw);
+            //clawL.setPosition(claw);
         }
         }
 
