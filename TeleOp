@@ -36,8 +36,11 @@ public class Teleop extends LinearOpMode {
     BNO055IMU imu;
     Orientation angles;
     //StoneTracker
-    // stoneTrack = new StoneTracker();
+    //stoneTrack = new StoneTracker();
     //StoneTracker stoneTrack;
+    double drive;
+    double turn;
+    double strafe;
     
     //Define Hardware
     public void hardwareInit() {
@@ -60,9 +63,6 @@ public class Teleop extends LinearOpMode {
         intakeR.setDirection(DcMotor.Direction.REVERSE);
         //clawR.setDirection(Servo.Direction.REVERSE);
         //clawL.setDirection(Servo.Direction.FORWARD);
-        double drive;
-        double turn;
-        double strafe;
     }
     //Turn until degrees is ~0
     public void findZero(double degrees, double error) {
