@@ -1,0 +1,7 @@
+on:
+  pull_request:
+    tags: 
+      - release
+    branches: 
+      - master
+      - release/*
