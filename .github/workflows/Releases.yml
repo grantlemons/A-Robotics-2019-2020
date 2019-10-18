@@ -4,4 +4,9 @@ on:
       - release
     branches: 
       - master
-      - release/*
+jobs:
+  release:
+    name: release on commit
+    runs-on: macOS-latest
+    steps:
+        - run: release/*
