@@ -17,9 +17,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import java.util.Locale;
 
-@TeleOp(name="Drive", group="Linear Opmode")
+@TeleOp(name="DriveNew", group="Linear Opmode")
 
-public class TeleOp extends LinearOpMode {
+public class Teleop extends LinearOpMode {
     //Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftFront = null;
@@ -86,11 +86,11 @@ public class TeleOp extends LinearOpMode {
         runtime.reset();
         while (opModeIsActive()) {
             angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            findZero(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle), 4);
+            findZero(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle), 0.5);
             double claw = gamepad2.right_trigger - gamepad2.left_trigger;
-            stonetrack();
-            arm();
-            pickBlock();
+            //stonetrack();
+            //arm();
+            //pickBlock();
             intake();
             drive();
             powerToMotors();
@@ -144,9 +144,18 @@ public class TeleOp extends LinearOpMode {
         intake = 0;
     }
     public void findZero(double degrees, double error) {
-        if (degrees <= -error || degrees >= error && gamepad1.x) {
-            turn = degrees * 0.06;
-            telemetry.addData("Turning:","(%.2f)", degrees * 0.06);
+        double speed = 0.02;
+        if (gamepad1.x) {
+            if (degrees <= -error || degrees >= error) {
+                if (degrees > 0) {
+                    turn = degrees * speed + 0.05;
+                } else {
+                    turn = degrees * speed - 0.05;
+                }
+                telemetry.addData("Turning:","(%.2f)", degrees * speed);
+            } else {
+                turn = 0;
+            }
         }
     }
     public void drive() {
