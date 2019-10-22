@@ -19,7 +19,7 @@ import java.util.Locale;
 
 @TeleOp(name="Drive", group="Linear Opmode")
 
-public class TeleOp extends LinearOpMode {
+public class Teleop extends LinearOpMode {
     //Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftFront = null;
@@ -86,7 +86,7 @@ public class TeleOp extends LinearOpMode {
         runtime.reset();
         while (opModeIsActive()) {
             angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            findZero(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle), 4);
+            findZero(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle), 0.5);
             double claw = gamepad2.right_trigger - gamepad2.left_trigger;
             stonetrack();
             arm();
@@ -144,9 +144,27 @@ public class TeleOp extends LinearOpMode {
         intake = 0;
     }
     public void findZero(double degrees, double error) {
-        if (degrees <= -error || degrees >= error && gamepad1.x) {
-            turn = degrees * 0.06;
-            telemetry.addData("Turning:","(%.2f)", degrees * 0.06);
+        if (gamepad1.x) {
+            double speed = 0.04;
+            if (OnePressZero) {
+                while (degrees <= -error || degrees >= error) {
+                    if (degrees > 0) {
+                        turn = degrees * speed + 0.5;
+                    } else {
+                        turn = degrees * speed - 0.5;
+                    }
+                    telemetry.addData("Turning:","(%.2f)", degrees * 0.06);
+                }
+            } else {
+                if (degrees <= -error || degrees >= error) {
+                    if (degrees > 0) {
+                        turn = degrees * speed + 0.5;
+                    } else {
+                        turn = degrees * speed - 0.5;
+                    }
+                    telemetry.addData("Turning:","(%.2f)", degrees * 0.06);
+                }
+            }
         }
     }
     public void drive() {
