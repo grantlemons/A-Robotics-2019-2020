@@ -17,7 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import java.util.Locale;
 
-@TeleOp(name="DriveNew", group="Linear Opmode")
+@TeleOp(name="Drive", group="Linear Opmode")
 
 public class Teleop extends LinearOpMode {
     //Declare OpMode members.
@@ -88,9 +88,9 @@ public class Teleop extends LinearOpMode {
             angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             findZero(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle), 0.5);
             double claw = gamepad2.right_trigger - gamepad2.left_trigger;
-            //stonetrack();
-            //arm();
-            //pickBlock();
+            stonetrack();
+            arm();
+            pickBlock();
             intake();
             drive();
             powerToMotors();
@@ -144,17 +144,26 @@ public class Teleop extends LinearOpMode {
         intake = 0;
     }
     public void findZero(double degrees, double error) {
-        double speed = 0.02;
         if (gamepad1.x) {
-            if (degrees <= -error || degrees >= error) {
-                if (degrees > 0) {
-                    turn = degrees * speed + 0.05;
-                } else {
-                    turn = degrees * speed - 0.05;
+            double speed = 0.04;
+            if (OnePressZero) {
+                while (degrees <= -error || degrees >= error) {
+                    if (degrees > 0) {
+                        turn = degrees * speed + 0.5;
+                    } else {
+                        turn = degrees * speed - 0.5;
+                    }
+                    telemetry.addData("Turning:","(%.2f)", degrees * 0.06);
                 }
-                telemetry.addData("Turning:","(%.2f)", degrees * speed);
             } else {
-                turn = 0;
+                if (degrees <= -error || degrees >= error) {
+                    if (degrees > 0) {
+                        turn = degrees * speed + 0.5;
+                    } else {
+                        turn = degrees * speed - 0.5;
+                    }
+                    telemetry.addData("Turning:","(%.2f)", degrees * 0.06);
+                }
             }
         }
     }
