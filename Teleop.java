@@ -44,6 +44,7 @@ public class Teleop extends LinearOpMode {
     double leftfront;
     double rightback;
     boolean rightStickStrafe = true;
+    boolean OnePressZero = true;
     
     public void hardwareInit() {
         leftFront  = hardwareMap.get(DcMotor.class, "purple");
