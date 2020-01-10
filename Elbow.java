@@ -78,19 +78,6 @@ public class Elbow {
         elbowMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
     
-    public void toRelativeBlockPosition(int input) {
-        if (input > 0 && currentBlockLevel < blockPositions.length-1) {
-            currentBlockLevel++;
-        }
-        if (input < 0 && currentBlockLevel > 0) {
-            currentBlockLevel--;
-        }
-        
-        if (currentBlockLevel >= 0) {
-            moveToPosition(blockPositions[currentBlockLevel]);
-        }
-    }
-    
     public double move(double input) {
         elbowMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         elbowMotor.setPower(input*0.25);

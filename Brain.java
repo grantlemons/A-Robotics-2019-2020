@@ -127,20 +127,18 @@ public class Brain {
     }
 
     public void toRelativeBlockPosition(int input) {
-        if (input > 0 && currentBlockLevel < slidePositions.length-1) {
+        if (input > 0 && currentBlockLevel < blockPositions.length-1) {
             currentBlockLevel++;
         }
-        // For testing, just roll around to 0
-        else {
-            currentBlockLevel = 0;
+
+        if (input < 0 && currentBlockLevel > 0) {
+            currentBlockLevel--;
         }
 
-//        if (input < 0 && currentBlockLevel > 0) {
-//            currentBlockLevel--;
-//        }
-
-        slide.moveToPosition(slidePositions[currentBlockLevel]);
-        elbow.moveToPosition(elbowPositions[currentBlockLevel]);
+        if (currentBlockLevel >= 0) {
+            slide.moveToPosition(slidePositions[currentBlockLevel]);
+            elbow.moveToPosition(elbowPositions[currentBlockLevel]);
+        }
     }
 
     public void captureStoneForDriver() {
