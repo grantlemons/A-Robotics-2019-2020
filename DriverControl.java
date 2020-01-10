@@ -54,7 +54,7 @@ public class DriverControl extends LinearOpMode {
             //*******************
             // Slide
             //*******************
-            //slide.extendRestricted(-gamepad2.right_stick_y);
+            slide.extendRestricted(-gamepad2.right_stick_y);
             
             //*******************
             // Elbow
@@ -72,16 +72,16 @@ public class DriverControl extends LinearOpMode {
             //Disable drivetrain with all buttons for when on table
             if(!find && !gamepad1.right_bumper) {
                 drivetrain.drive(
-                        -gamepad1.left_stick_y,
-                        gamepad1.right_stick_x,
-                        gamepad1.left_stick_x
+                    -gamepad1.left_stick_y,
+                    gamepad1.right_stick_x,
+                    gamepad1.left_stick_x
                 );
             }
             if (!find && gamepad1.right_bumper) {
                 drivetrain.drive(
-                        -gamepad1.left_stick_y*0.25,
-                        gamepad1.right_stick_x*0.25,
-                        gamepad1.left_stick_x*0.25
+                    -gamepad1.left_stick_y*0.25,
+                    gamepad1.right_stick_x*0.25,
+                    gamepad1.left_stick_x*0.25
                 );
             }
             //Only when y pressed
