@@ -63,8 +63,8 @@ public class DriverControl extends LinearOpMode {
 
             if (gamepad2.x) {elbow.toDrivingPos();}
             if (gamepad2.b) {elbow.toZero();}
-            if (gamepad2.y) {elbow.toRelativeBlockPosition(+1);}
-            if (gamepad2.a) {elbow.toRelativeBlockPosition(-1);}
+            if (gamepad2.y) {brain.toRelativeBlockPosition(+1);}
+            if (gamepad2.a) {brain.toRelativeBlockPosition(-1);}
             
             //*******************
             // Drivetrain
