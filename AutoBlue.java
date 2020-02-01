@@ -33,7 +33,11 @@ public class AutoBlue extends LinearOpMode {
         Elbow elbow = new Elbow(hardwareMap);
         Hand hand = new Hand(hardwareMap);
         Brain brain = new Brain(hardwareMap, hand, slide, drivetrain, elbow, stoneTracker, telemetry);
+        telemetry.addData("Ready", "Yes");
+        telemetry.update();
         waitForStart();
-        brain.autonomousBlue();
+        if (opModeIsActive()) {
+            brain.autonomousBlue();
+        }
     }
 }

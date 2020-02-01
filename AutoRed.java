@@ -33,7 +33,11 @@ public class AutoRed extends LinearOpMode {
         Elbow elbow = new Elbow(hardwareMap);
         Hand hand = new Hand(hardwareMap);
         Brain brain = new Brain(hardwareMap, hand, slide, drivetrain, elbow, stoneTracker, telemetry);
+        telemetry.addData("Ready", "Yes");
+        telemetry.update();
         waitForStart();
-        brain.autonomousRed();
+        if (opModeIsActive()) {
+            brain.autonomousRed();
+        }
     }
 }

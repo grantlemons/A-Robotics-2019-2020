@@ -95,14 +95,38 @@ public class Drivetrain {
         lastTime = 0;
     }
     
+    public void drive(double forward, double turn, double strafe) {
+        //Calculate power
+        double leftFrontPwr = forward + turn + strafe;
+        double rightFrontPwr = forward - turn - strafe;
+        double leftbBackPwr = forward + turn - strafe;
+        double rightBackPwr = forward - turn + strafe;
+        //Power to motors
+        leftFront.setPower(leftFrontPwr);
+        rightFront.setPower(rightFrontPwr);
+        rightBack.setPower(rightBackPwr);
+        leftBack.setPower(leftbBackPwr);
+        
+/**********
+NormalizedRGBA colors = colorSensor.getNormalizedColors();
+        float[] hsvValues = new float[3];
+        Color.colorToHSV(colors.toColor(), hsvValues);
+        telemetry.addLine()
+                .addData("S", "%.3f", hsvValues[1])
+                .addData("V", "%.3f", hsvValues[2]);
+                .addData("H", "%.3f", hsvValues[0])
+**********/
+    }
+    
     public void driveWithLimit(double forward, double turn, double strafe){
         double elapsedTime = timer.milliseconds() - lastTime;
+        lastTime = timer.milliseconds();
         //Calculate power
         double leftFrontPwrTarget = forward + turn + strafe;
         double rightFrontPwrTarget = forward - turn - strafe;
-        double leftBackPwrTarget = forward + turn - strafe;
         double rightBackPwrTarget = forward - turn + strafe;
         
+        double leftBackPwrTarget = forward + turn - strafe;
         leftFrontPwrCurrent = leftFront.getPower();
         leftBackPwrCurrent = leftBack.getPower();
         rightFrontPwrCurrent = rightFront.getPower();
@@ -110,14 +134,45 @@ public class Drivetrain {
         
         //Power to motors
         leftFront.setPower(getNewPower(elapsedTime, leftFrontPwrCurrent, leftFrontPwrTarget));
-        leftBack.setPower(getNewPower(elapsedTime, leftBackPwrCurrent, leftBackPwrTarget));
         rightFront.setPower(getNewPower(elapsedTime, rightFrontPwrCurrent, rightFrontPwrTarget));
         rightBack.setPower(getNewPower(elapsedTime, rightBackPwrCurrent, rightBackPwrTarget));
+        leftBack.setPower(getNewPower(elapsedTime, leftBackPwrCurrent, leftBackPwrTarget));
+    }
+    
+    public void driveOneCallWithLimit(double forward, double turn, double strafe) {
         lastTime = timer.milliseconds();
+        
+        //Calculate power
+        double leftFrontPwrTarget = forward + turn + strafe;
+        double rightFrontPwrTarget = forward - turn - strafe;
+        double leftBackPwrTarget = forward + turn - strafe;
+        double rightBackPwrTarget = forward - turn + strafe;
+        
+        do {
+            leftFrontPwrCurrent = leftFront.getPower();
+            leftBackPwrCurrent = leftBack.getPower();
+            rightFrontPwrCurrent = rightFront.getPower();
+            rightBackPwrCurrent = rightBack.getPower();
+
+            try {Thread.sleep(1);} catch(InterruptedException ule) {}
+            
+            double elapsedTime = timer.milliseconds() - lastTime;
+            lastTime = timer.milliseconds();
+            
+            //Power to motors
+            leftFront.setPower(getNewPower(elapsedTime, leftFrontPwrCurrent, leftFrontPwrTarget));
+            rightFront.setPower(getNewPower(elapsedTime, rightFrontPwrCurrent, rightFrontPwrTarget));
+            rightBack.setPower(getNewPower(elapsedTime, rightBackPwrCurrent, rightBackPwrTarget));
+            leftBack.setPower(getNewPower(elapsedTime, leftBackPwrCurrent, leftBackPwrTarget));
+        } while (
+                leftFrontPwrCurrent != leftFrontPwrTarget 
+            || leftBackPwrCurrent != leftBackPwrTarget
+            || rightFrontPwrCurrent != rightFrontPwrTarget 
+            || rightBackPwrCurrent != rightBackPwrTarget);
     }
     
     private double getNewPower(double elapsedTime, double currentPower, double targetPower) {
-        double maxAccel = 1.0/150;
+        double maxAccel = 1.0/250;
         double powerChange = maxAccel*elapsedTime;
         
         if (targetPower > currentPower) {
@@ -127,29 +182,6 @@ public class Drivetrain {
             return Math.max(currentPower-powerChange, targetPower);
         }
         return currentPower;
-    }
-    
-    public void drive(double forward, double turn, double strafe) {
-        //Calculate power
-        double leftFrontPwr = forward + turn + strafe;
-        double rightFrontPwr = forward - turn - strafe;
-        double leftbBackPwr = forward + turn - strafe;
-        double rightBackPwr = forward - turn + strafe;
-        //Power to motors
-        leftFront.setPower(leftFrontPwr);
-        leftBack.setPower(leftbBackPwr);
-        rightFront.setPower(rightFrontPwr);
-        rightBack.setPower(rightBackPwr);
-        
-/**********
-NormalizedRGBA colors = colorSensor.getNormalizedColors();
-        float[] hsvValues = new float[3];
-        Color.colorToHSV(colors.toColor(), hsvValues);
-        telemetry.addLine()
-                .addData("H", "%.3f", hsvValues[0])
-                .addData("S", "%.3f", hsvValues[1])
-                .addData("V", "%.3f", hsvValues[2]);
-**********/
     }
     
     public boolean setHeading(double targetHeading) {
@@ -206,8 +238,9 @@ NormalizedRGBA colors = colorSensor.getNormalizedColors();
     public void forwardDistance(int moveDistance, double power) {
 
         // Conversion is 4000 counts per 33.2 inches
-        int deltaPosition = moveDistance * 40000 / 332;
-        
+        // Ajusted for 40:1 gearbox
+        int deltaPosition = moveDistance * 40000 / 332 * 4 / 6;
+
         int targetLeftFrontPos = leftFront.getCurrentPosition() + deltaPosition;
         int targetLeftBackPos = leftBack.getCurrentPosition() + deltaPosition;
         int targetRightFrontPos = rightFront.getCurrentPosition() + deltaPosition;
@@ -223,16 +256,18 @@ NormalizedRGBA colors = colorSensor.getNormalizedColors();
         rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        drive(power, 0, 0);
+        driveOneCallWithLimit(power, 0, 0);
 
-        //try {Thread.sleep(5000);} catch(InterruptedException ule) {}
+        while(Math.abs(leftFront.getCurrentPosition() - targetLeftFrontPos) > 600) {}
+
+        driveOneCallWithLimit(.3, 0, 0);
 
         while(Math.abs(leftFront.getCurrentPosition() - targetLeftFrontPos) > 5) {}
         while(Math.abs(leftBack.getCurrentPosition() - targetLeftBackPos) > 5) {}
         while(Math.abs(rightFront.getCurrentPosition() - targetRightFrontPos) > 5) {}
         while(Math.abs(rightBack.getCurrentPosition() - targetRightBackPos) > 5) {}
 
-        drive(0, 0, 0);
+        driveOneCallWithLimit(0, 0, 0);
 
         leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -243,7 +278,8 @@ NormalizedRGBA colors = colorSensor.getNormalizedColors();
     public void strafeDistance(int moveDistance, double power) {
 
         // Conversion is 4000 counts per 33.2 inches
-        int deltaPosition = moveDistance * 40000 / 332;
+        // Ajusted for 40:1 gearbox
+        int deltaPosition = moveDistance * 40000 / 332 * 4 / 6;
         
         int targetLeftFrontPos = leftFront.getCurrentPosition() + deltaPosition;
         int targetLeftBackPos = leftBack.getCurrentPosition() - deltaPosition;
@@ -260,16 +296,18 @@ NormalizedRGBA colors = colorSensor.getNormalizedColors();
         rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        drive(power, 0, 0);
+        driveOneCallWithLimit(power, 0, 0);
 
-        //try {Thread.sleep(5000);} catch(InterruptedException ule) {}
+        while(Math.abs(leftFront.getCurrentPosition() - targetLeftFrontPos) > 600) {}
+
+        driveOneCallWithLimit(.3, 0, 0);
 
         while(Math.abs(leftFront.getCurrentPosition() - targetLeftFrontPos) > 5) {}
         while(Math.abs(leftBack.getCurrentPosition() - targetLeftBackPos) > 5) {}
         while(Math.abs(rightFront.getCurrentPosition() - targetRightFrontPos) > 5) {}
         while(Math.abs(rightBack.getCurrentPosition() - targetRightBackPos) > 5) {}
 
-        drive(0, 0, 0);
+        driveOneCallWithLimit(0, 0, 0);
 
         leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -278,17 +316,16 @@ NormalizedRGBA colors = colorSensor.getNormalizedColors();
     }
 
     public void forwardToColorNoStop(String searchColor, double power, double heading) {
-
         // Priming read
         NormalizedRGBA colors = colorSensor.getNormalizedColors();
         float[] hsvValues = new float[3];
         Color.colorToHSV(colors.toColor(), hsvValues);
 
         // Allow for some variance in hue and saturation
-        while ((searchColor.equals("blue") && hsvValues[0] < 180) || 
+        while (((searchColor.equals("blue") && hsvValues[0] < 180) || 
                 (searchColor.equals("red") && hsvValues[0] > 0) ||
-                hsvValues[1] < 0.7) {
-            drive(power, headingAdjust(heading), 0);
+                hsvValues[1] < 0.7)) {
+            driveWithLimit(power, headingAdjust(heading), 0);
             colors = colorSensor.getNormalizedColors();
             Color.colorToHSV(colors.toColor(), hsvValues);
         }

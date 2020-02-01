@@ -19,9 +19,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import java.util.Locale;
 
-@TeleOp(name="FreeMovement", group="Linear Opmode")
+@TeleOp(name="Setup", group="Linear Opmode")
 
-public class FreeMovement extends LinearOpMode {
+public class Setup extends LinearOpMode {
     boolean table = false;
     boolean find = false;
     
@@ -32,8 +32,8 @@ public class FreeMovement extends LinearOpMode {
     public void runOpMode() {
         //Init StoneTracker
         StoneTracker stoneTracker = new StoneTracker();
-        stoneTracker.init(hardwareMap);
-        stoneTracker.activate();
+        //stoneTracker.init(hardwareMap);
+        //stoneTracker.activate();
 
         Drivetrain drivetrain = new Drivetrain(hardwareMap, telemetry);
         Slide slide = new Slide(hardwareMap);
@@ -43,38 +43,7 @@ public class FreeMovement extends LinearOpMode {
                 drivetrain, elbow, stoneTracker, telemetry);
         
         waitForStart();
-        //drivetrain.forwardDistance(36, 1);
-        //try {Thread.sleep(3000);} catch(InterruptedException ule) {}
-        //drivetrain.forwardDistance(-36, 1);
         while (opModeIsActive()) {
-            //*******************
-            // Brain
-            //*******************
-            
-            if(gamepad2.left_trigger > 0) {
-                brain.autonomousBlue();
-            }
-            
-            if (gamepad2.right_trigger == 0) {
-                looking = true;
-            }
-            if(gamepad2.right_trigger > 0 && looking == true && found == false) {
-                found = brain.approachSkyStoneBlue();
-                if (found == true) {
-                    looking = false;
-                    found = false;
-                }
-            }
-            if (gamepad1.right_trigger > 0) {
-                brain.captureStoneForDriver();
-            }
-            if (gamepad2.y) {
-                brain.toRelativeBlockPosition(1);
-            }
-            if (gamepad2.a) {
-                brain.toRelativeBlockPosition(-1);
-            }
-            
             //*******************
             // Hand
             //*******************
@@ -83,9 +52,6 @@ public class FreeMovement extends LinearOpMode {
             }
             if(gamepad2.left_bumper) {
                 hand.open();
-            }
-            if(gamepad2.b) {
-                //hand.closeStart();
             }
             telemetry.addData("GetPos", hand.handServo.getPosition());
             
@@ -99,33 +65,17 @@ public class FreeMovement extends LinearOpMode {
             //*******************
             telemetry.addData("Elbow", elbow.move(-gamepad2.left_stick_y));
             
-            if(gamepad2.x) {
-                elbow.toZero();
+            if(gamepad2.a) {
+                telemetry.addData("Going", "Up");
+                elbow.calibrate();
+                slide.calibrate();
+                hand.closeStart();
             }
             
-            //*******************
-            // Drivetrain
-            //*******************
-            if(!find && !gamepad1.right_bumper) {
-                drivetrain.driveWithLimit(
-                        -gamepad1.left_stick_y,
-                        gamepad1.right_stick_x,
-                        gamepad1.left_stick_x
-                );
-            }
-            if (!find && gamepad1.right_bumper) {
-                drivetrain.driveWithLimit(
-                        -gamepad1.left_stick_y*0.25,
-                        gamepad1.right_stick_x*0.25,
-                        gamepad1.left_stick_x*0.25
-                );
-            }
-            // Direction
-            while(gamepad1.y) {drivetrain.setHeading(0);}
-            while(gamepad1.x) {drivetrain.setHeading(90);} // +angle is left
-            while(gamepad1.b) {drivetrain.setHeading(-90);} // -angle is right
-            while(gamepad1.a) {drivetrain.setHeading(180);}
-
+            /*if(gamepad2.x) {
+                elbow.toZero();
+                slide.fullyRetract();
+            }*/
             telemetry.update();
        }
     }

@@ -28,7 +28,6 @@ import java.util.Locale;
 public class Elbow {
     private DcMotor elbowMotor = null;
     int min = -1300;
-    int level = 0;
     int max = 1500;
     int[] blockPositions = {1000, 550, 0, -700};
     int currentBlockLevel = -1;
@@ -45,30 +44,26 @@ public class Elbow {
     public void moveToPosition(int targetPos) {
         elbowMotor.setTargetPosition(targetPos);
         elbowMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        elbowMotor.setPower(0.8);
+        elbowMotor.setPower(0.6);
         while(Math.abs(elbowMotor.getCurrentPosition() - targetPos) > 5) {}
         try {Thread.sleep(100);} catch(InterruptedException ule) {}
         elbowMotor.setPower(0);
     }
     
     public void fullyDown() {
-        currentBlockLevel = -1; // reset
         moveToPosition(max);
     }
     
     public void almostFullyDown() {
-        currentBlockLevel = -1; // reset
-        moveToPosition(max - 150);
+        moveToPosition(max - 250);
     }
     
     public void toZero() {
-        currentBlockLevel = 2; // reset to reflect first block position
         moveToPosition(0);
     }
     
     public void toDrivingPos() {
-        currentBlockLevel = 0; // reset
-        moveToPosition(blockPositions[currentBlockLevel]);
+        moveToPosition(1100);
     }
     
     public void calibrate() {
