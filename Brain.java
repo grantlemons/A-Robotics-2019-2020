@@ -261,6 +261,25 @@ public class Brain {
         }
 
     }
+
+    public void parkBlue(string side) {
+        // startup
+        toRelativeBlockPosition(-1);
+        while (!drivetrain.setHeading(0))
+        if (side == "inside") drivetrain.strafeDistance(26, 0.5);
+        if (side == "outside") {}
+        forwardToColorNoStop("blue", 0.75, 0);
+    }
+
+    public void parkRed(string side) {
+        // startup
+        toRelativeBlockPosition(-1);
+        while (!drivetrain.setHeading(0))
+        if (side == "inside") drivetrain.strafeDistance(26, 0.5);
+        if (side == "outside") {}
+        forwardToColorNoStop("red", 0.75, 0);
+    }
+
     public void autonomousRed() {
         // startup
         hand.close();
