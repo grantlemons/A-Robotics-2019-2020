@@ -263,7 +263,6 @@ public class Brain {
     }
 
     public void parkBlue(string side) {
-        // startup
         toRelativeBlockPosition(-1);
         while (!drivetrain.setHeading(0))
         if (side == "inside") drivetrain.strafeDistance(26, 0.5);
@@ -272,7 +271,6 @@ public class Brain {
     }
 
     public void parkRed(string side) {
-        // startup
         toRelativeBlockPosition(-1);
         while (!drivetrain.setHeading(0))
         if (side == "inside") drivetrain.strafeDistance(26, 0.5);
