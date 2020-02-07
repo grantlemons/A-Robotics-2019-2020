@@ -317,9 +317,9 @@ NormalizedRGBA colors = colorSensor.getNormalizedColors();
 
     public void forwardToColorNoStop(String searchColor, double power, double heading) {
         // Priming read
-        NormalizedRGBA colors = colorSensor.getNormalizedColors();
-        float[] hsvValues = new float[3];
-        Color.colorToHSV(colors.toColor(), hsvValues);
+        //NormalizedRGBA colors = colorSensor.getNormalizedColors();
+        //float[] hsvValues = new float[3];
+        //Color.colorToHSV(colors.toColor(), hsvValues);
 
         // Allow for some variance in hue and saturation
         while (((searchColor.equals("blue") && hsvValues[0] < 180) || 
@@ -331,3 +331,6 @@ NormalizedRGBA colors = colorSensor.getNormalizedColors();
         }
     }
 }
+
+searchColor.equals("blue") && Color.blue() > Color.red()+50
+searchColor.equals("red") && Color.red() > Color.blue()+50
